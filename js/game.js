@@ -11,5 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     GameController.init();
     var monster = new Creature();
+    var hero = new Hero();
     console.log(monster);
+    console.log(hero);
 });
