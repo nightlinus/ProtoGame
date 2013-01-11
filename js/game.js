@@ -14,4 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var hero = new Hero();
     console.log(monster);
     console.log(hero);
+    hero.traverseTo(100);
+    console.log(hero);
 });

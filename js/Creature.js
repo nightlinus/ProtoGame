@@ -1,11 +1,10 @@
 /**
- * Created with JetBrains PhpStorm.
  * User: OgarkovMA
  * Date: 10.01.13
  * Time: 16:34
- * To change this template use File | Settings | File Templates.
+ * модуль существа
  */
-var Creature = (function(_){
+var Creature = (function( _ ){
     // Дефолтные параметры объекта
     var defaults = {
         'width': 10,
@@ -45,6 +44,8 @@ var Creature = (function(_){
      */
     var traverseTo = function(x){
         this.x = x;
+
+        //Возвращаем сам объект, для образования цепочек: creature.traverseTo(10).move(20).move(10)
         return this;
     };
 
@@ -55,6 +56,8 @@ var Creature = (function(_){
      */
     var move = function(deltaTime){
         this.x += this.speed*deltaTime;
+
+        //Возвращем сам объект для реализации method chaining
         return this;
     };
 
@@ -64,5 +67,7 @@ var Creature = (function(_){
     // Пишем функционал в прототип
     Creature.prototype.traverseTo = traverseTo;
     Creature.prototype.move = move;
+
+    // Возвращаем наш конструктор существа
     return Creature;
-})(_);
+})( _ ); // Выполняем наш модуль и передаем в него _ (конструктор lodash)

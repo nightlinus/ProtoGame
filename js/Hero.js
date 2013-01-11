@@ -20,10 +20,10 @@ var Hero = (function( _ , parentClass){
     }
 
     // Наследуем прототип parentClass
-    this.prototype = Object.create(parentClass.prototype);
+    Hero.prototype = Object.create(parentClass.prototype);
 
     // Пишем правильный конструктор в прототип
-    this.prototype.constructor = Hero;
+    Hero.prototype.constructor = Hero;
 
     //Возвращаем конструктор класса
     return Hero;
