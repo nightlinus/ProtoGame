@@ -40,7 +40,7 @@ var Creature = (function( _ ){
     /**
      * Метод для перемещения объекта в указанную координату
      * @param x
-     * @return this
+     * @return {*}
      */
     var traverseTo = function(x){
         this.x = x;
