@@ -42,4 +42,27 @@ document.addEventListener('DOMContentLoaded', function () {
     //проверяем получил ли наш герой методы из Creature
     hero.traverseTo(100);
     console.log(hero);
+
+    var x = 0;
+    var delta = 1;
+    var tick = 0;
+
+    function paint( time ){
+        requestAnimationFrame(paint, canvas);
+        draw();
+    }
+
+
+    function draw(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ff0000';
+        ctx.strokeStyle = '#ff0000';
+        ctx.strokeRect(x, 0, 100, 100);
+        if ( (x + 100) >= canvas.width || x + delta == 0){
+            delta = -1*delta;
+        }
+        x += delta;
+    }
+    draw = _.throttle(draw, 1000/30);
+    paint(Date.now());
 });
