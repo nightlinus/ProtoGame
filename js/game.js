@@ -20,14 +20,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var ctx = canvas.getContext('2d');
 
     //Цвет заливки канваса
-    ctx.fillStyle = '#000000';
+    ctx.strokeStyle = '#000000';
 
     //Просто проверяем, что он работает
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-    //Это УГ, сейчас пытается слушать события клавиатуры
-    //@TODO подумать над видом контроллера и его функционалом
-    GameController.init(); // Так лучше не делать, надо через new
+    var eventController = new EventController();
+    var kbController = new KeyboardController({
+        'eventController': eventController
+    });
 
     // Создаем экхемпляр монстра
     var monster = new Creature();
@@ -55,9 +56,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function draw(){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ff0000';
+       // ctx.fillStyle = '#ffff00';
         ctx.strokeStyle = '#ff0000';
+        //ctx.fillRect(x, 0, 100, 100);
         ctx.strokeRect(x, 0, 100, 100);
+       // ctx.drawImage(canvas2, 0, 0 , canvas2.width, canvas2.height, 0, 0, canvas2.width, canvas2.height);
         if ( (x + 100) >= canvas.width || x + delta == 0){
             delta = -1*delta;
         }
