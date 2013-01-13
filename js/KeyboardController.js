@@ -5,7 +5,7 @@
  * Time: 15:50
  * To change this template use File | Settings | File Templates.
  */
-var KeyboardController = (function ( _ , host ) {
+var KeyboardController = (function ( _ , host, parentClass ) {
     var defaults = {
         'eventController': host.eventController,
         'events': {
@@ -54,19 +54,16 @@ var KeyboardController = (function ( _ , host ) {
 
     var trigger = function( eventName, options ){
         options = options || {};
-        console.log(eventName, options.state);
         this.eventController.publish( eventName, options );
         return this;
     };
 
 
     //Заполняем прототип
-    KeyboardController.prototype = {
-        constructor: KeyboardController,
-        hook: hook,
-        trigger: trigger
-    };
+    KeyboardController.prototype = Object.create(parentClass.prototype);
+    KeyboardController.prototype.constructor = KeyboardController;
+    KeyboardController.prototype.hook = hook;
 
     //Возвращаем конструктор класса
     return KeyboardController;
-})( _ , window );
+})( _ , window, GameObject );
