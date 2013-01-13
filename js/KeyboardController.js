@@ -60,12 +60,12 @@ var KeyboardController = (function ( _ , host ) {
     };
 
 
-    //Пишем правильный конструктор
-    KeyboardController.prototype.constructor = KeyboardController;
-
-    //Заполняем прототип методами
-    KeyboardController.prototype.hook = hook;
-    KeyboardController.prototype.trigger = trigger;
+    //Заполняем прототип
+    KeyboardController.prototype = {
+        constructor: KeyboardController,
+        hook: hook,
+        trigger: trigger
+    };
 
     //Возвращаем конструктор класса
     return KeyboardController;

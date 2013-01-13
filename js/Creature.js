@@ -71,12 +71,12 @@ var Creature = (function (_) {
         return this;
     };
 
-    //Пишем в прототип правильный конструктор
-    Creature.prototype.constructor = Creature;
-
-    //Пишем функционал в прототип
-    Creature.prototype.traverseTo = traverseTo;
-    Creature.prototype.move = move;
+    //Заполняем прототип
+    Creature.prototype = {
+        constructor: Creature,
+        traverseTo: traverseTo,
+        move: move
+    };
 
     //Возвращаем наш конструктор существа
     return Creature;
