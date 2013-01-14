@@ -24,6 +24,8 @@ var Artist = (function( _, parentClass ){
         if ( options.buffer) {
             this.buffer = true;
             this.bufferCanvas = document.createElement('canvas');
+            this.bufferCanvas.buffer = true;
+            document.getElementsByTagName('body')[0].appendChild(this.bufferCanvas);
             this.bufferCanvas.width = this.nativeObject.width;
             this.bufferCanvas.height = this.nativeObject.height;
         }
@@ -44,7 +46,7 @@ var Artist = (function( _, parentClass ){
                 x : obj.x,
                 y : obj.y
             };
-        if (this.nativeObject.draw( timeStamp, prevState, cv )) {
+        if (this.nativeObject.draw( timeStamp, prevState, cv)) {
             if ( this.buffer ) {
                 this.ctx.clearRect(prevState.x, prevState.y, obj.width, obj.height);
                 this.ctx.drawImage(
@@ -83,8 +85,8 @@ var Artist = (function( _, parentClass ){
         this.length = 0;
     }
 
-    var addObject = function ( object, canvas) {
-        var tempObj = new DrawObject( object, canvas);
+    var addObject = function ( object, canvas, options) {
+        var tempObj = new DrawObject( object, canvas, options);
         this.objects[tempObj.id] = tempObj;
         this.length += 1;
         return tempObj.id;

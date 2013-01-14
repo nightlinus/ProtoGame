@@ -118,14 +118,17 @@ var Creature = (function (_, parentClass) {
     };
 
     var paint = function( prevState, canvas ){
-        var ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d'),
+            buffer = canvas.buffer || false,
+            self = this,
+            state = buffer ? {x: 0, y: 0} :{ x: self.x, y: self.y  };
         //Чистим прошлый кадр
         ctx.clearRect(prevState.x, prevState.y, this.width, this.height);
         //Рисуем заново
         ctx.fillStyle = '#000';
         ctx.beginPath();
         ctx.save();
-        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.translate(state.x + this.width / 2, state.y + this.height / 2);
         ctx.arc(0, 0, this.width/2, 0, 2*Math.PI, false);
         ctx.fill();
         ctx.restore();

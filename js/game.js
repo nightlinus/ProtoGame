@@ -30,10 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
             eventController: eventController
         }),
         hero = new Hero({
-            eventController:eventController,
-            buffer: true
+            eventController:eventController
         });
 
-    renderer.addObject( hero, canvas);
+    renderer.addObject( hero, canvas, {buffer: true});
     renderer.start();
 });

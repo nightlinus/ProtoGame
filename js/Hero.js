@@ -14,7 +14,7 @@ var Hero = (function( _ , parentClass){
      */
     function Hero ( options ) {
         //Вызываем родительский конструктор в контексте нашего объекта
-        parentClass.apply(this, arguments);
+        parentClass.call(this, options);
 
         //Дальше инициализируем собственные поля класса
     }
