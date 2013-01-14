@@ -13,24 +13,46 @@ var Artist = (function( _, parentClass ){
 
     //------------------DrawObject-----------------------//
 
+    /**
+     * Конструктор вспомогательного объекта,
+     * который будем хранить внутри Artist.
+     * Объект должен следить за своим нативным объектом
+     * и отрисовывать его при необходимости в слой,
+     * указанный в конструкторе.
+     *
+     * Опционально для объекта моэно включить буффер.
+     * @param object объект, который нужно нарисовать
+     * @param canvas слой объекта
+     * @param options опции
+     * @constructor
+     */
     function DrawObject( object, canvas, options) {
         options = options || {};
         this.id = object.id = guidGenerator();
         this.nativeObject = object;
         this.layer = canvas;
         this.ctx =  this.layer.getContext('2d');
+        //@TODO пересмотреть инициализацию беферного канваса, он должен быть null, но тогда нужно переписывать draw
         this.bufferCanvas = this.layer;
         this.buffer = false;
         if ( options.buffer) {
             this.buffer = true;
+            //Создаем канвас в памяти, но не добавляем в DOM.
             this.bufferCanvas = document.createElement('canvas');
+            //Метка о том, что канвас буферный. Сделана для нативных объектов,
+            //чтобы они знали когда рисоваться «по центру», а когда в оординатах
             this.bufferCanvas.buffer = true;
-            //document.getElementsByTagName('body')[0].appendChild(this.bufferCanvas);
+            //Изменяем канвас под размеры нативного объекта
             this.bufferCanvas.width = this.nativeObject.width;
             this.bufferCanvas.height = this.nativeObject.height;
         }
     }
 
+    /**
+     * Метод для генерации уникальнрго id,
+     * будем присваивать их DrawObject'ам
+     * @return {string}
+     */
     var guidGenerator = function() {
         var S4 = function() {
             return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -39,6 +61,12 @@ var Artist = (function( _, parentClass ){
         return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
     };
 
+    /**
+     * Метод прорисовки нативного объекта
+     * @TODO По-хорошему использование здесь метода из нативного объекта — плохо. Нужно перейти на события, если не скажется на производительности.
+     * @param timeStamp
+     * @return {*}
+     */
     var draw = function( timeStamp ) {
         var obj = this.nativeObject,
             cv  = this.bufferCanvas,
@@ -64,13 +92,18 @@ var Artist = (function( _, parentClass ){
         }
         return this;
     };
-
-    DrawObject.prototype = Object.create(parentClass.prototype);
+    //Пишем прототип DrawObject
+    DrawObject.prototype = Object.create(parentClass.prototype);//Наследуем от parentClass(GameObject)
     DrawObject.prototype.constructor = DrawObject;
     DrawObject.prototype.draw = draw;
 
     //-----------------Artist-----------------------//
 
+    /**
+     * Конструктор рендера
+     * @param options
+     * @constructor
+     */
     function Artist( options ) {
         options = options || {};
         _.defaults(options, defaults);

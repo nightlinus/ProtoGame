@@ -64,10 +64,8 @@ var Creature = (function (_, parentClass) {
         this.on('move', function( event ){
             if (event.state == 'off') {
                 self.direction -= event.direction;
-                console.log(self.direction);
             } else {
                 self.direction += event.direction;
-                console.log(self.direction);
             }
             if (!self.direction) {
                 self.changeState(STATE_IDLE);
