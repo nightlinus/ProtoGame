@@ -14,7 +14,6 @@ var GameObject = (function ( _ , host) {
         options = options || {};
         //Расширяем options дефолтными параметрами, если их нет в options
         _.defaults(options, defaults);
-        console.log(host.eventController);
         this.eventController = options.eventController;
     }
 

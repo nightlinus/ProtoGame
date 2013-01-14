@@ -10,8 +10,8 @@ var Creature = (function (_, parentClass) {
         STATE_JUMP = 2;
     // Дефолтные параметры объекта
     var defaults = {
-        'width': 10,
-        'height': 10,
+        'width': 100,
+        'height': 100,
         'speed': 10,
 
         //Animation state
@@ -51,15 +51,27 @@ var Creature = (function (_, parentClass) {
         //Направоение по умолчанию: вперед
         this.direction = 1;
 
-        this.speed = 1/10;
+
+        //Speed in px per second
+        this.speed = 100;
         //Время последней отрисовки
         this.lastDraw = null;
         this.on('key:right', function( event ){
             if (event.state == 'up') {
-                self.changeState(STATE_IDLE)
+                self.changeState(STATE_IDLE);
                 this.lastDraw = null;
             } else {
-                self.changeState(STATE_MOVE)
+                self.changeState(STATE_MOVE);
+                self.direction = 1;
+            }
+        });
+        this.on('key:left', function( event ){
+            if (event.state == 'up') {
+                self.changeState(STATE_IDLE);
+                this.lastDraw = null;
+            } else {
+                self.changeState(STATE_MOVE);
+                self.direction = -1;
             }
         });
     }
@@ -84,7 +96,7 @@ var Creature = (function (_, parentClass) {
     var move = function (timeStamp) {
         var dt = timeStamp - (this.lastDraw || timeStamp);
         this.animationState += STATE_MOVE;
-        this.x += (0.5 + this.direction * this.speed * dt) | 0;
+        this.x += (this.direction * this.speed * dt / 1000) | 0;
 
         //Возвращем сам объект для реализации method chaining
         return this;
@@ -107,15 +119,22 @@ var Creature = (function (_, parentClass) {
 
     var paint = function( prevState, canvas ){
         var ctx = canvas.getContext('2d');
+        //Чистим прошлый кадр
         ctx.clearRect(prevState.x, prevState.y, this.width, this.height);
-        ctx.fillStyle = '#ffff00';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        //Рисуем заново
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.arc(0, 0, this.width/2, 0, 2*Math.PI, false);
+        ctx.fill();
+        ctx.restore();
+        ctx.closePath();
         return this;
     };
 
     var changeState = function( state ) {
         this.state = state;
-        console.log(this);
         return this;
     };
 

@@ -17,13 +17,13 @@ var Artist = (function( _, parentClass ){
         options = options || {};
         this.id = object.id = guidGenerator();
         this.nativeObject = object;
-        this.canvas = canvas;
-        this.ctx =  canvas.getContext('2d');
-        this.bufferCanvas = this.canvas;
+        this.layer = canvas;
+        this.ctx =  this.layer.getContext('2d');
+        this.bufferCanvas = this.layer;
         this.buffer = false;
         if ( options.buffer) {
             this.buffer = true;
-            this.bufferCanvas = document.createElement('canvas');
+            this.bufferCanvas = document.createElement('layer');
             this.bufferCanvas.width = this.nativeObject.width;
             this.bufferCanvas.height = this.nativeObject.height;
         }
@@ -79,25 +79,26 @@ var Artist = (function( _, parentClass ){
         this.fps = options.fps;
         this.state = STATE_IDLE;
 
-        this.layers = {};
+        this.objects = {};
         this.length = 0;
     }
 
     var addObject = function ( object, canvas) {
         var tempObj = new DrawObject( object, canvas);
-        this.layers[tempObj.id] = tempObj;
+        this.objects[tempObj.id] = tempObj;
         this.length += 1;
         return tempObj.id;
     };
 
     var drawScene = function( timeStamp ) {
-        var layers = this.layers;
+        var objects = this.objects;
         if (!this.length) return this.stop();
-        for (var currentLayer in layers) {
-            layers[currentLayer].draw( timeStamp );
+        for (var currentObject in objects) {
+            objects[currentObject].draw( timeStamp );
         }
         if (!animationCondition.call(this)) cancelRequestAnimationFrame();
-        requestAnimationFrame( this.drawScene, this.canvas );
+        requestAnimationFrame( this.drawScene, this.layer );
+        return this;
     };
 
     var animationCondition = function() {
