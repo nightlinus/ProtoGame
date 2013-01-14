@@ -23,7 +23,7 @@ var Artist = (function( _, parentClass ){
         this.buffer = false;
         if ( options.buffer) {
             this.buffer = true;
-            this.bufferCanvas = document.createElement('canvas');
+            this.bufferCanvas = document.createElement('layer');
             this.bufferCanvas.width = this.nativeObject.width;
             this.bufferCanvas.height = this.nativeObject.height;
         }
