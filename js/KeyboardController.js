@@ -9,13 +9,29 @@ var KeyboardController = (function ( _ , host, parentClass ) {
     var defaults = {
         'eventController': host.eventController,
         'events': {
-            '$37': 'key:left',
-            '$38': 'key:up',
-            '$39': 'key:right',
-            '$40': 'key:down',
-            '$32': 'key:space'
-        }
-    };
+            '$37': {
+                event : 'move',
+                direction: -1
+            },
+            '$38': {
+                event: 'jump',
+                direction: 3
+            },
+            '$39': {
+                event: 'move',
+                direction: 1
+            },
+            '$40': {
+                event: 'crouch',
+                direction: -3
+            },
+            '$32': {
+                event: 'hit',
+                direction: 0
+            }
+            }
+        };
+
     function KeyboardController( options ) {
         options = options || {};
         _.defaults(options, defaults);
@@ -33,31 +49,31 @@ var KeyboardController = (function ( _ , host, parentClass ) {
     };
 
     var handleDown = function( event ){
-        var key = '$' + event.keyCode;
+        var key = '$' + event.keyCode,
+            options = {};
 
         //Если уже нажата кнопка, то ничего не делаем
         if (this.pressed[key] || !this.events[key]) return this;
-
+        options.nativeEvent = event;
+        options.state = 'on';
+        options.direction = this.events[key].direction;
         //Если не нажата, то добавляем в массив нажатых
         this.pressed[key] = event.timeStamp;
 
         //Вызываем событие в соответствии с конфигом
-        return this.trigger(this.events[key], {'state':'down'});
+        return this.trigger(this.events[key].event, options);
     };
 
     var handleUp = function( event ){
-        var key = '$' + event.keyCode;
+        var key = '$' + event.keyCode,
+            options = {};
         if (!this.events[key]) return this;
+        options.nativeEvent = event;
+        options.state = 'off';
+        options.direction = this.events[key].direction;
         this.pressed[key] = null;
-        return this.trigger(this.events[key], {'state':'up'});
+        return this.trigger(this.events[key].event, options);
     };
-
-    var trigger = function( eventName, options ){
-        options = options || {};
-        this.eventController.publish( eventName, options );
-        return this;
-    };
-
 
     //Заполняем прототип
     KeyboardController.prototype = Object.create(parentClass.prototype);

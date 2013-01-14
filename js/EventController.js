@@ -19,8 +19,13 @@ var EventController = (function( _ ){
     var publish = function( channel, options) {
         if (!this.channels[channel]) return this;
         var chan = this.channels[channel];
+        var event = {
+            type: channel,
+            timeStamp: Date.now()
+        };
+        _.defaults(event, options);
         for (var i = 0; i < chan.length; i++) {
-            chan.subscribers[i].callback.apply(chan.subscribers[i].context, [options]);
+            chan.subscribers[i].callback.call(chan.subscribers[i].context, event);
         }
         return this;
     };

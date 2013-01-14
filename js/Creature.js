@@ -6,8 +6,13 @@
  */
 var Creature = (function (_, parentClass) {
     var STATE_IDLE = 0,
-        STATE_MOVE = 1,
-        STATE_JUMP = 2;
+        STATE_MOVE = 1;
+
+    var DIRECTION_UP = 3,
+        DIRECTION_DOWN = -3,
+        DIRECTION_RIGHT = 1,
+        DIRECTION_LEFT = -1,
+        DIRECTION_ZERO = 0;
     // Дефолтные параметры объекта
     var defaults = {
         'width': 100,
@@ -49,30 +54,27 @@ var Creature = (function (_, parentClass) {
         this.y = options.y;
 
         //Направоение по умолчанию: вперед
-        this.direction = 1;
+        this.direction = 0;
 
 
         //Speed in px per second
         this.speed = 100;
         //Время последней отрисовки
         this.lastDraw = null;
-        this.on('key:right', function( event ){
-            if (event.state == 'up') {
+        this.on('move', function( event ){
+            if (event.state == 'off') {
+                self.direction -= event.direction;
+                console.log(self.direction);
+            } else {
+                self.direction += event.direction;
+                console.log(self.direction);
+            }
+            if (!self.direction) {
                 self.changeState(STATE_IDLE);
                 this.lastDraw = null;
-            } else {
-                self.changeState(STATE_MOVE);
-                self.direction = 1;
+                return;
             }
-        });
-        this.on('key:left', function( event ){
-            if (event.state == 'up') {
-                self.changeState(STATE_IDLE);
-                this.lastDraw = null;
-            } else {
-                self.changeState(STATE_MOVE);
-                self.direction = -1;
-            }
+            self.changeState(STATE_MOVE);
         });
     }
 
@@ -107,10 +109,7 @@ var Creature = (function (_, parentClass) {
             case STATE_IDLE:
                 return false;
             case STATE_MOVE:
-                this.move( timeStamp);
-                break;
-            case STATE_JUMP:
-                this.jump( timeStamp );
+                this.move( timeStamp );
                 break;
         }
         this.paint( prevState, canvas );
@@ -136,7 +135,7 @@ var Creature = (function (_, parentClass) {
         return this;
     };
 
-    var changeState = function( state ) {
+    var changeState = function( state, direction ) {
         this.state = state;
         return this;
     };

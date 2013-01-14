@@ -33,7 +33,12 @@ var GameObject = (function ( _ , host) {
         constructor: GameObject,
         trigger: trigger,
         subscribe: subscribe,
-        on: subscribe
+        on: subscribe,
+        DIRECTION_UP: 3,
+        DIRECTION_DOWN: -3,
+        DIRECTION_RIGHT: 1,
+        DIRECTION_LEFT: -1,
+        DIRECTION_ZERO: 0
     };
 
     //Возвращаем наш конструктор существа

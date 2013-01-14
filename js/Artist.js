@@ -25,7 +25,7 @@ var Artist = (function( _, parentClass ){
             this.buffer = true;
             this.bufferCanvas = document.createElement('canvas');
             this.bufferCanvas.buffer = true;
-            document.getElementsByTagName('body')[0].appendChild(this.bufferCanvas);
+            //document.getElementsByTagName('body')[0].appendChild(this.bufferCanvas);
             this.bufferCanvas.width = this.nativeObject.width;
             this.bufferCanvas.height = this.nativeObject.height;
         }
