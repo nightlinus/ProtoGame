@@ -3,8 +3,10 @@
  * Date: 13.01.13
  * Time: 19:36
  * Модуль исходного игрового объекта
- * @TODO Возможно лучше оформить в виде mixin
+ * TODO Возможно лучше оформить в виде mixin
  */
+'use strict';
+
 var GameObject = (function ( _ , host) {
     var defaults = {
         eventController: host.eventController
@@ -60,7 +62,7 @@ var GameObject = (function ( _ , host) {
         on: subscribe,
         //Константы направления, не очень хорошо их здесь хранить т.к.
         //они уже есть в контролере управления
-        //@TODO подумать где хранить эти константы
+        //TODO подумать где хранить эти константы
         DIRECTION_UP: 3,
         DIRECTION_DOWN: -3,
         DIRECTION_RIGHT: 1,

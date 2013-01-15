@@ -4,10 +4,16 @@
  * Time: 16:34
  * модуль существа
  */
-var Creature = (function (_, parentClass) {
-    var STATE_IDLE = 0,
-        STATE_MOVE = 1;
+'use strict';
 
+var Creature = (function (_, parentClass) {
+    var ACTION_IDLE = 0,
+        ACTION_MOVE = 1,
+        ACTION_JUMP = 2,
+        ACTION_SLASH = 4,
+        ACTION_CROUCH = 8;
+
+    //Направления движения
     var DIRECTION_UP = 3,
         DIRECTION_DOWN = -3,
         DIRECTION_RIGHT = 1,
@@ -20,7 +26,7 @@ var Creature = (function (_, parentClass) {
         'speed': 10,
 
         //Animation state
-        'animationState': STATE_IDLE,
+        'animationState': ACTION_IDLE,
         //Coordinates
         'x': 0,
         'y': 0
@@ -46,43 +52,33 @@ var Creature = (function (_, parentClass) {
         this.width = options.width;
         this.height = options.height;
 
-        //Присваиваем состояние анимации
-        this.animationState = options.animationState;
-
         //Присваиваем координаты
         this.x = options.x;
         this.y = options.y;
 
-        //Направоение по умолчанию: вперед
-        this.direction = 0;
-
+        //Текущее состояние IDLE
+        this.state = {
+            action: ACTION_IDLE,
+            direction: 0
+        };
 
         //Speed in px per second
         this.speed = 100;
+
         //Время последней отрисовки
         this.lastDraw = null;
-        this.on('move', function( event ){
-            if (event.state == 'off') {
-                self.direction -= event.direction;
-            } else {
-                self.direction += event.direction;
-            }
-            if (!self.direction) {
-                self.changeState(STATE_IDLE);
-                this.lastDraw = null;
-                return;
-            }
-            self.changeState(STATE_MOVE);
-        });
+        this.on('move', this.stateHandler);
     }
 
     /**
      * Метод для перемещения объекта в указанную координату
      * @param x
      * @return {*}
+     * @param y
      */
-    var traverseTo = function (x) {
+    var traverseTo = function ( x , y ) {
         this.x = x;
+        this.y = y;
 
         //Возвращаем сам объект, для образования цепочек: creature.traverseTo(10).move(20).move(10)
         return this;
@@ -93,27 +89,38 @@ var Creature = (function (_, parentClass) {
      * @return {*}
      * @param timeStamp
      */
-    var move = function (timeStamp) {
+    var move = function ( timeStamp ) {
         var dt = timeStamp - (this.lastDraw || timeStamp);
-        this.animationState += STATE_MOVE;
-        this.x += (this.direction * this.speed * dt / 1000) | 0;
+        this.x += (this.state.direction * this.speed * dt / 1000) | 0;
 
         //Возвращем сам объект для реализации method chaining
         return this;
     };
 
+    /**
+     * Метод прорисовки в зависимости от состояния
+     * @param timeStamp
+     * @param prevState
+     * @param canvas
+     * @return {*}
+     */
     var draw = function( timeStamp, prevState, canvas) {
-        switch (this.state) {
-            case STATE_IDLE:
-                return false;
-            case STATE_MOVE:
-                this.move( timeStamp );
-                break;
+        var currAction = this.state.action;
+        if (currAction == ACTION_IDLE && this.lastDraw != null) {
+            this.lastDraw = timeStamp;
+            return false;
         }
+        if (currAction & ACTION_MOVE) this.move( timeStamp );
         this.paint( prevState, canvas );
         return this.lastDraw = timeStamp;
     };
 
+    /**
+     * Метод для отрисовки своего состояния
+     * @param prevState
+     * @param canvas
+     * @return {*}
+     */
     var paint = function( prevState, canvas ){
         var ctx = canvas.getContext('2d'),
             buffer = canvas.buffer || false,
@@ -133,9 +140,30 @@ var Creature = (function (_, parentClass) {
         return this;
     };
 
-    var changeState = function( state, direction ) {
-        this.state = state;
+    /**
+     * Метод для изменения состояния объекта.
+     * TODO возможно в будущем нужно убрать, если не обрастет большим функционалом
+     * @return {*}
+     * @param action
+     */
+    var changeState = function( action ) {
+        this.state.action = action;
+        if (action == ACTION_IDLE) this.state.direction = 0;
         return this;
+    };
+
+    var stateHandler = function( event ) {
+        if (event.state == 'off') {
+            this.state.direction -= event.direction;
+        } else {
+            this.state.direction += event.direction;
+        }
+        if (!this.state.direction) {
+            this.changeState(ACTION_IDLE);
+            this.lastDraw = null;
+            return;
+        }
+        this.changeState(ACTION_MOVE);
     };
 
     //Заполняем прототип
@@ -146,6 +174,7 @@ var Creature = (function (_, parentClass) {
     Creature.prototype.draw = draw;
     Creature.prototype.paint = paint;
     Creature.prototype.changeState = changeState;
+    Creature.prototype.stateHandler = stateHandler;
 
     //Возвращаем наш конструктор существа
     return Creature;

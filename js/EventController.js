@@ -4,12 +4,15 @@
  * Time: 16:08
  *
  * Модуль с медиатором
- * @TODO медиатор должен быть singleton'ом
  */
+'use strict';
+
 var EventController = (function( _ ){
     var defaults = {
 
-    };
+        },
+        instance;
+
 
     /**
      * Конструктор нашего медиатора
@@ -17,11 +20,17 @@ var EventController = (function( _ ){
      * @constructor
      */
     function EventController( options ) {
+        //Singleton: если объект уже был создан, то возвращаем его
+        if (instance) return instance;
+
+        //Кладем в инстанс ссылку на наш объект
+        instance = this;
         options = options || {};
         _.defaults(options, defaults);
 
         //Создаем хэш для хранения каналов
         this.channels = {};
+        return this;
     }
 
     /**

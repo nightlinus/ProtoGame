@@ -3,37 +3,40 @@
  * Date: 12.01.13
  * Time: 15:50
  * Модуль для организации управления
- * @TODO нужно сделать объект singleton'ом
+ * TODO нужно сделать объект singleton'ом
  */
+'use strict';
+
 var KeyboardController = (function ( _ , host, parentClass ) {
     var defaults = {
-        'eventController': host.eventController,
-        //Через конфиг задаем список событий и соответствующие параметры,
-        //а так же коды клавиш
-        //@TODO возможно понадобится механизм для назначение клавиш в рантайме, его нет
-        'events': {
-            '$37': {
-                event : 'move',
-                direction: -1
-            },
-            '$38': {
-                event: 'jump',
-                direction: 3
-            },
-            '$39': {
-                event: 'move',
-                direction: 1
-            },
-            '$40': {
-                event: 'crouch',
-                direction: -3
-            },
-            '$32': {
-                event: 'hit',
-                direction: 0
+            'eventController': host.eventController,
+            //Через конфиг задаем список событий и соответствующие параметры,
+            //а так же коды клавиш
+            //TODO возможно понадобится механизм для назначение клавиш в рантайме, его нет
+            'events': {
+                '$37': {
+                    event : 'move',
+                    direction: -1
+                },
+                '$38': {
+                    event: 'jump',
+                    direction: 3
+                },
+                '$39': {
+                    event: 'move',
+                    direction: 1
+                },
+                '$40': {
+                    event: 'crouch',
+                    direction: -3
+                },
+                '$32': {
+                    event: 'hit',
+                    direction: 0
+                }
             }
-            }
-        };
+        },
+        instance;
 
     /**
      * Создаем наш контроллер клавиатуры
@@ -41,6 +44,8 @@ var KeyboardController = (function ( _ , host, parentClass ) {
      * @constructor
      */
     function KeyboardController( options ) {
+        if (instance) return instance;
+        instance = this;
         options = options || {};
         _.defaults(options, defaults);
 
@@ -51,6 +56,7 @@ var KeyboardController = (function ( _ , host, parentClass ) {
 
         //Сразу же начинаем слушать клавиатуру
         this.hook();
+        return this;
     }
 
     /**
