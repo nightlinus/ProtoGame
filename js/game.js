@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         hero = new Hero({
             eventController:eventController
         });
+    hero.y = canvas.height-hero.height;
 
     renderer.addObject( hero, canvas, {buffer: true});
     renderer.start();
