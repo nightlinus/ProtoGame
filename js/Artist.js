@@ -15,7 +15,7 @@ var Artist = (function( _, parentClass ){
             fps: 30
         };
 
-    //------------------DrawObject-----------------------//
+    //------------------DrawModel-----------------------//
 
     /**
      * Конструктор вспомогательного объекта,
@@ -30,7 +30,7 @@ var Artist = (function( _, parentClass ){
      * @param options опции
      * @constructor
      */
-    function DrawObject( object, canvas, options) {
+    function DrawModel( object, canvas, options) {
         options = options || {};
         this.id = object.id = guidGenerator();
         this.nativeObject = object;
@@ -54,7 +54,7 @@ var Artist = (function( _, parentClass ){
 
     /**
      * Метод для генерации уникальнрго id,
-     * будем присваивать их DrawObject'ам
+     * будем присваивать их DrawModel'ам
      * @return {string}
      */
     var guidGenerator = function() {
@@ -102,17 +102,17 @@ var Artist = (function( _, parentClass ){
         }
         return this;
     };
-    //Пишем прототип DrawObject
-    DrawObject.prototype = Object.create(parentClass.prototype);//Наследуем от parentClass(GameObject)
-    DrawObject.prototype.constructor = DrawObject;
-    DrawObject.prototype.draw = draw;
+    //Пишем прототип DrawModel
+    DrawModel.prototype = Object.create(parentClass.prototype);//Наследуем от parentClass(GameObject)
+    DrawModel.prototype.constructor = DrawModel;
+    DrawModel.prototype.draw = draw;
 
     //-----------------Artist-----------------------//
 
     /**
      * Конструктор рендера.
      * Рендерер умеет ограничивать фпс и оборачивать прорисовку
-     * своих DrawObject в requestAnimationFrame
+     * своих DrawModel в requestAnimationFrame
      * @param options
      * @constructor
      */
@@ -132,15 +132,15 @@ var Artist = (function( _, parentClass ){
         //Состояние рендерера(пока не особо используется)
         this.state = STATE_IDLE;
 
-        //Хэш для хранения DrawObject
-        this.objects = {};
+        //Хэш для хранения DrawModel
+        this.drawModels = {};
 
-        //Кол-во DrawObject для отрисовки
+        //Кол-во DrawModel для отрисовки
         this.length = 0;
     }
 
     /**
-     * Метод для добавления DrawObject'ов в рендерер
+     * Метод для добавления DrawModel'ов в рендерер
      * Принимает объект, который нужно рисовать, слой объекта и параметры
      *
      * @param object объект для отрисовки(должен обладать методом draw)
@@ -149,11 +149,11 @@ var Artist = (function( _, parentClass ){
      * @return {*|String|String}
      */
     var addObject = function ( object, canvas, options) {
-        //Создаем новый DrawObject
-        var tempObj = new DrawObject( object, canvas, options);
+        //Создаем новый DrawModel
+        var tempObj = new DrawModel( object, canvas, options);
 
         //Кладем его в рендерер
-        this.objects[tempObj.id] = tempObj;
+        this.drawModels[tempObj.id] = tempObj;
 
         //Не забываем наращивать кол-во наших объектов
         this.length += 1;
@@ -170,14 +170,14 @@ var Artist = (function( _, parentClass ){
      * @return {*}
      */
     var drawScene = function( timeStamp ) {
-        var objects = this.objects;
+        var objects = this.drawModels;
 
         //Если объектов нет, то останавливаем цикл
         //рисования. Автостарта цикла пока нет
         //TODO можно подумать нужен ли автостарт прорисовки, если появляются объекты
         if (!this.length) return this.stop();
 
-        //проходимся по всем объектам DrawObject и заставляем их отрисовывать себя
+        //проходимся по всем объектам DrawModel и заставляем их отрисовывать себя
         for (var currentObject in objects) {
             objects[currentObject].draw( timeStamp );
         }

@@ -34,8 +34,8 @@
             hero = new Hero({
                 eventController:eventController
             });
+        console.log('a');
         hero.y = canvas.height-hero.height;
-
         renderer.addObject( hero, canvas, {buffer: true});
         renderer.start();
     });

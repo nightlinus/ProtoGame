@@ -68,6 +68,7 @@ var Creature = (function (_, parentClass) {
         //Время последней отрисовки
         this.lastDraw = null;
         this.on('move', this.stateHandler);
+        this.on('jump', this.stateHandler);
     }
 
     /**
@@ -129,12 +130,9 @@ var Creature = (function (_, parentClass) {
         //Чистим прошлый кадр
         ctx.clearRect(prevState.x, prevState.y, this.width, this.height);
         //Рисуем заново
-        ctx.fillStyle = '#000';
-        ctx.beginPath();
         ctx.save();
-        ctx.translate(state.x + this.width / 2, state.y + this.height / 2);
-        ctx.arc(0, 0, this.width/2, 0, 2*Math.PI, false);
-        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.fillRect(state.x, state.y, this.width, this.height);
         ctx.restore();
         ctx.closePath();
         return this;
@@ -163,7 +161,19 @@ var Creature = (function (_, parentClass) {
             this.lastDraw = null;
             return;
         }
-        this.changeState(ACTION_MOVE);
+        switch (this.state.direction) {
+            case DIRECTION_ZERO:
+                this.changeState(ACTION_IDLE);
+                this.lastDraw = null;
+                break;
+            case DIRECTION_RIGHT:
+            case DIRECTION_LEFT:
+                this.changeState(ACTION_MOVE);
+                break;
+            case DIRECTION_UP:
+                this.changeState(ACTION_JUMP);
+                break;
+        }
     };
 
     //Заполняем прототип
