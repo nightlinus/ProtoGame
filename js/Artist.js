@@ -184,7 +184,7 @@ var Artist = (function( _, parentClass ){
 
         //Проверяем условие завершения цикла рисования
         if (!animationCondition.call(this)) {
-            cancelRequestAnimationFrame();
+            cancelRequestAnimationFrame(null);
             return this;
         }
 

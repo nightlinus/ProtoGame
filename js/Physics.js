@@ -104,11 +104,32 @@ var PhysEngine = (function ( _, parentClass ) {
         };
     };
 
+    var interact = function( obj ){
+        if (this.fastCollisionDetect(this, obj)) {
+            console.log('collision: ' + obj.type);
+            switch (obj.type) {
+                case 'world':
+                    break;
+                case 'object':
+                    break;
+                case 'enemy':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return this;
+    };
+
+    var act = function(){
+
+    };
+
     PhysModel.prototype = Object.create( parentClass.prototype );
     PhysModel.prototype.constructor = PhysModel;
     PhysModel.prototype.surroundingRect = surroundingRect;
     PhysModel.prototype.fastCollisionDetect = fastCollisionDetect;
-
+    PhysModel.prototype.interact = interact;
     
     
     
