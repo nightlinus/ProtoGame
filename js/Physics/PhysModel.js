@@ -1,56 +1,16 @@
 /**
  * Created within ProtoGame.
  * User: OgarkovMA
- * Date: 16.01.13
- * Time: 13:26
+ * Date: 03.02.13
+ * Time: 19:59
  *
  */
 'use strict';
 
-var PhysEngine = (function ( _, parentClass ) {
+var PhysModel = (function ( _, parentClass ) {
 
-//**************************PhysEngine*********************************//
-
-    function PhysEngine(){
-        this.physModels = [];
-        this.world = null;
-    }
-
-    var addObject = function( object, options){
-        this.physModels.push(new PhysModel(object, options));
-        return this;
-    };
-
-    var removeObject = function( id ){
-        var collection = this.physModels,
-            i;
-        for ( i = collection.length; i > -1; i--) {
-            if (collection[i].id == id) {
-                collection.splice( i, 1 );
-                return true;
-            }
-        }
-        return false;
-    };
-
-    var process = function( dt ){
-        var collection = this.physModels,
-            len = collection.length;
-        for (var i = 0; i < len; i++ ) {
-
-        }
-    };
-
-
-    PhysEngine.prototype = Object.create(parentClass.prototype);
-    PhysEngine.prototype.constructor = PhysEngine;
-    PhysEngine.prototype.addObject = addObject;
-    PhysEngine.prototype.removeObject = removeObject;
-
-
-
-//**************************PhysModel*********************************//
-
+    var PHYS_DELTA = 0.02,
+        g = 10;
 
     function PhysModel( object, options ){
         this.id = object.id;
@@ -59,16 +19,30 @@ var PhysEngine = (function ( _, parentClass ) {
 
     var fastCollisionDetect = function( obj1, obj2 ) {
         return (
-                   (obj2.x >= obj1.x && obj2.x <= obj1.x + obj1.width)
-                       ||
-                   (obj2.x + obj2.width >= obj1.x && obj2.x + obj2.width <= obj1.x + obj1.width)
-               )
-                &&
-               (
-                   (obj2.y >= obj1.y && obj2.y <= obj1.y + obj1.height)
-                       ||
-                   (obj2.y + obj2.height >= obj1.y && obj2.y + obj2.height <= obj1.y + obj1.height)
-               );
+            (obj2.x >= obj1.x && obj2.x <= obj1.x + obj1.width)
+                ||
+                (obj2.x + obj2.width >= obj1.x && obj2.x + obj2.width <= obj1.x + obj1.width)
+            )
+            &&
+            (
+                (obj2.y >= obj1.y && obj2.y <= obj1.y + obj1.height)
+                    ||
+                    (obj2.y + obj2.height >= obj1.y && obj2.y + obj2.height <= obj1.y + obj1.height)
+                );
+    };
+
+    var preciseCollisionDetect = function( obj1, obj2 ) {
+        return (
+            (obj2.x >= obj1.x && obj2.x <= obj1.x + obj1.width)
+                ||
+                (obj2.x + obj2.width >= obj1.x && obj2.x + obj2.width <= obj1.x + obj1.width)
+            )
+            &&
+            (
+                (obj2.y >= obj1.y && obj2.y <= obj1.y + obj1.height)
+                    ||
+                    (obj2.y + obj2.height >= obj1.y && obj2.y + obj2.height <= obj1.y + obj1.height)
+                );
     };
 
     var rotateCoordinates = function( sourceX, sourceY, angle ) {
@@ -89,13 +63,20 @@ var PhysEngine = (function ( _, parentClass ) {
             width: this.width,
             height: this.height
         };
-        var firstPoint, secondPoint, thirdPoint, fourthPoint, xMin, yMin;
+        var firstPoint,
+            secondPoint,
+            thirdPoint,
+            fourthPoint,
+            xMin,
+            yMin;
+
         firstPoint = rotateCoordinates(this.x, this.y, this.angle);
         secondPoint = rotateCoordinates(this.x+this.width, this.y, this.angle);
         fourthPoint = rotateCoordinates(this.x+this.width, this.y+this.height, this.angle);
         thirdPoint = rotateCoordinates(this.x, this.y+this.height, this.angle);
         xMin = Math.min(firstPoint.x, secondPoint.x, thirdPoint.x, fourthPoint.x);
         yMin = Math.min(firstPoint.y, secondPoint.y, thirdPoint.y, fourthPoint.y);
+
         return {
             x: xMin,
             y: yMin,
@@ -121,6 +102,38 @@ var PhysEngine = (function ( _, parentClass ) {
         return this;
     };
 
+    var applyForces = function() {
+        if (!this.hasCollision('down')) {
+            this.speed.y = this.speed.y - g*PHYS_DELTA;
+        }
+        return this;
+    };
+
+    var move = function( time ){
+        this.x = this.speed.x*time;
+        this.y = this.speed.y*time;
+        return this;
+    };
+
+    var checkCollisions = function( collection, selfNumber){
+        var objects = collection.slice(selfNumber, 1),
+            len = objects.length;
+        for (var i = len; i > -1; i--) {
+            if  (this.detectCollision(objects[i])) {
+                this.onCollision();
+                objects[i].onCollision();
+            }
+        }
+        return this;
+    };
+
+    var detectCollision = function( object ) {
+        if (!fastCollisionDetect(this, object)) {
+            return false;
+        }
+        return preciseCollisionDetect(this, object);
+    };
+
     var act = function(){
 
     };
@@ -130,8 +143,12 @@ var PhysEngine = (function ( _, parentClass ) {
     PhysModel.prototype.surroundingRect = surroundingRect;
     PhysModel.prototype.fastCollisionDetect = fastCollisionDetect;
     PhysModel.prototype.interact = interact;
-    
-    
-    
-    return PhysEngine;
+    PhysModel.prototype.applyForces = applyForces;
+    PhysModel.prototype.move = move;
+    PhysModel.prototype.checkCollisions = checkCollisions;
+    PhysModel.prototype.detectCollision = detectCollision;
+
+
+
+    return PhysModel;
 })( _, GameObject );
