@@ -53,6 +53,7 @@ var PhysEngine = (function ( _, parentClass, PhysModel ) {
     PhysEngine.prototype.constructor = PhysEngine;
     PhysEngine.prototype.addObject = addObject;
     PhysEngine.prototype.removeObject = removeObject;
+    PhysEngine.prototype.process = process;
 
     return PhysEngine;
 })( _, GameObject, PhysModel );

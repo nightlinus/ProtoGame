@@ -2,74 +2,47 @@
  * User: OgarkovMA
  * Date: 13.01.13
  * Time: 19:36
- * Модуль исходного игрового объекта
- * TODO Возможно лучше оформить в виде mixin
+ * Модуль игрового объекта
  */
 'use strict';
 
-var GameObject = (function ( _ , host) {
-    var defaults = {
-        eventController: host.eventController
-    };
+var GameObject = (function ( _ , Mixin) {
 
     /**
      * Конструктор GameObject
      * @param options
      * @constructor
      */
-    function GameObject(options) {
+    function GameObject( object, options) {
         //Если options не передан, присваиваем ему пустой объект
         options = options || {};
-        //Расширяем options дефолтными параметрами, если их нет в options
-        _.defaults(options, defaults);
-
-        // Храним в себе медиатор для подписки/уведомления о событиях
-        this.eventController = options.eventController;
+        this.id = options.id = guidGenerator();
+        this.stateObject = new object(options);
+        this.physObject = null;
+        this.drawObject = null;
     }
 
     /**
-     * Метод для вызова события с именем eventName
-     * @param eventName
-     * @param options
-     * @return {*}
+     * Метод для генерации уникальнрго id,
+     * будем присваивать их DrawModel'ам
+     * @return {string}
      */
-    var trigger = function( eventName, options ){
-        options = options || {};
+    var guidGenerator = function() {
+        var S4 = function() {
+            return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+        };
 
-        //Вызываем соответствующий метод в нашем медиаторе
-        this.eventController.publish( eventName, options );
-        return this;
+        return S4()+S4()+S4()+S4()+S4()+S4()+S4()+S4();
     };
 
-    /**
-     * Метод для подписки на события
-     * @param channel
-     * @param fn
-     * @return {*}
-     */
-    var subscribe = function( channel, fn) {
-
-        //Подписываемся на событие channel в медиаторе
-        this.eventController.subscribe( channel, fn, this);
-        return this;
-    };
 
     //Заполняем прототип
     GameObject.prototype = {
-        constructor: GameObject,
-        trigger: trigger,
-        subscribe: subscribe,
-        on: subscribe,
-        //Константы направления, не очень хорошо их здесь хранить т.к.
-        //они уже есть в контролере управления
-        //TODO подумать где хранить эти константы
-        DIRECTION_UP: 3,
-        DIRECTION_DOWN: -3,
-        DIRECTION_RIGHT: 1,
-        DIRECTION_LEFT: -1,
-        DIRECTION_ZERO: 0
+        constructor: GameObject
     };
+
+    Mixin( GameObject );
 
     //Возвращаем наш конструктор существа
     return GameObject;
-})( _, window); //Выполняем наш модуль и передаем в него _ (конструктор lodash)
+})( _, EventMixin); //Выполняем наш модуль и передаем в него _ (конструктор lodash)

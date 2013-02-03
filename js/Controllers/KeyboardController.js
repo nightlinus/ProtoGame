@@ -7,7 +7,7 @@
  */
 'use strict';
 
-var KeyboardController = (function ( _ , host, parentClass ) {
+var KeyboardController = (function ( _ , host, Mixin ) {
     var defaults = {
             'eventController': host.eventController,
             //Через конфиг задаем список событий и соответствующие параметры,
@@ -49,8 +49,6 @@ var KeyboardController = (function ( _ , host, parentClass ) {
         options = options || {};
         _.defaults(options, defaults);
 
-        //Храним ссылку на медиатор, для поддержки собственных событий
-        this.eventController = options.eventController;
         this.events = options.events;
         this.pressed = {};
 
@@ -134,10 +132,10 @@ var KeyboardController = (function ( _ , host, parentClass ) {
     };
 
     //Заполняем прототип
-    KeyboardController.prototype = Object.create(parentClass.prototype);
     KeyboardController.prototype.constructor = KeyboardController;
     KeyboardController.prototype.hook = hook;
+    Mixin( KeyboardController );
 
     //Возвращаем конструктор класса
     return KeyboardController;
-})( _ , window, GameObject );
+})( _ , window, EventMixin );

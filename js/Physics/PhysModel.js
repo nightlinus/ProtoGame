@@ -13,8 +13,18 @@ var PhysModel = (function ( _, parentClass ) {
         g = 10;
 
     function PhysModel( object, options ){
+        var self = this;
         this.id = object.id;
-        this.nativeObject = object;
+        this.stateObject = object;
+        this.onCollision = object.onCollision || null;
+        Object.defineProperty(this, 'speed', {
+            get: function() {
+                return self.stateObject.speed;
+            },
+            set: function( newValue ) {
+                return self.stateObject.speed = newValue;
+            }
+        });
     }
 
     var fastCollisionDetect = function( obj1, obj2 ) {
@@ -32,17 +42,7 @@ var PhysModel = (function ( _, parentClass ) {
     };
 
     var preciseCollisionDetect = function( obj1, obj2 ) {
-        return (
-            (obj2.x >= obj1.x && obj2.x <= obj1.x + obj1.width)
-                ||
-                (obj2.x + obj2.width >= obj1.x && obj2.x + obj2.width <= obj1.x + obj1.width)
-            )
-            &&
-            (
-                (obj2.y >= obj1.y && obj2.y <= obj1.y + obj1.height)
-                    ||
-                    (obj2.y + obj2.height >= obj1.y && obj2.y + obj2.height <= obj1.y + obj1.height)
-                );
+        return true;
     };
 
     var rotateCoordinates = function( sourceX, sourceY, angle ) {
@@ -85,21 +85,11 @@ var PhysModel = (function ( _, parentClass ) {
         };
     };
 
-    var interact = function( obj ){
-        if (this.fastCollisionDetect(this, obj)) {
-            console.log('collision: ' + obj.type);
-            switch (obj.type) {
-                case 'world':
-                    break;
-                case 'object':
-                    break;
-                case 'enemy':
-                    break;
-                default:
-                    return false;
-            }
+    var hasCollision = function( direction ) {
+        if (!this.collisions[direction]) {
+            return false;
         }
-        return this;
+        return true;
     };
 
     var applyForces = function() {
@@ -134,15 +124,11 @@ var PhysModel = (function ( _, parentClass ) {
         return preciseCollisionDetect(this, object);
     };
 
-    var act = function(){
-
-    };
 
     PhysModel.prototype = Object.create( parentClass.prototype );
     PhysModel.prototype.constructor = PhysModel;
     PhysModel.prototype.surroundingRect = surroundingRect;
     PhysModel.prototype.fastCollisionDetect = fastCollisionDetect;
-    PhysModel.prototype.interact = interact;
     PhysModel.prototype.applyForces = applyForces;
     PhysModel.prototype.move = move;
     PhysModel.prototype.checkCollisions = checkCollisions;

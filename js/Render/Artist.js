@@ -8,7 +8,7 @@
  */
 'use strict';
 
-var Artist = (function( _, parentClass, DrawModel ){
+var Artist = (function( _, Mixin, DrawModel ){
     var STATE_IDLE = 0,
         STATE_DRAW = 1,
         defaults = {
@@ -54,10 +54,12 @@ var Artist = (function( _, parentClass, DrawModel ){
      * @param options параметры
      * @return {*|String|String}
      */
-    var addObject = function ( object, canvas, options) {
+    var addObject = function ( object, options) {
         //Создаем новый DrawModel
-        var tempObj = new DrawModel( object, canvas, options);
+        options = options || {};
+        options.layer = options.layer || this.canvas;
 
+        var tempObj = new DrawModel( object, options);
         //Кладем его в рендерер
         this.drawModels[tempObj.id] = tempObj;
 
@@ -149,18 +151,19 @@ var Artist = (function( _, parentClass, DrawModel ){
         return this;
     };
 
-    //Наследуем прототип от родительского класса
-    Artist.prototype = Object.create(parentClass.prototype);
-
     //Пишем правильный конструктор в прототип
     Artist.prototype.constructor = Artist;
 
     //Заполняем прототип методами
     Artist.prototype.drawScene = drawScene;
+
     Artist.prototype.addObject = addObject;
     Artist.prototype.start = start;
     Artist.prototype.stop = stop;
 
+    //Подмешиваем события
+    Mixin( Artist );
+
     //Возвращаем конструктор рендера.
     return Artist;
-})( _, GameObject, DrawModel );
+})( _, EventMixin, DrawModel );

@@ -6,7 +6,7 @@
  */
 'use strict';
 
-var Creature = (function (_, parentClass) {
+var Creature = (function (_, Mixin) {
     var ACTION_IDLE = 0,
         ACTION_MOVE = 1,
         ACTION_JUMP = 2,
@@ -40,13 +40,13 @@ var Creature = (function (_, parentClass) {
     function Creature(options) {
         var self = this;
 
-        parentClass.call( this, options);
         //Если options не передан, присваиваем ему пустой объект
         options = options || {};
 
         //Расширяем options дефолтными параметрами, если их нет в options
         _.defaults(options, defaults);
-        this.eventController = options.eventController;
+
+        this.id = options.id || null;
 
         //Присваиваем объекту его ширину и высоту
         this.width = options.width;
@@ -106,6 +106,7 @@ var Creature = (function (_, parentClass) {
      * @return {*}
      */
     var draw = function( timeStamp, prevState, canvas) {
+        console.log(this);
         var currAction = this.state.action;
         if (currAction == ACTION_IDLE && this.lastDraw != null) {
             this.lastDraw = timeStamp;
@@ -177,7 +178,6 @@ var Creature = (function (_, parentClass) {
     };
 
     //Заполняем прототип
-    Creature.prototype = Object.create(parentClass.prototype);
     Creature.prototype.constructor = Creature;
     Creature.prototype.traverseTo = traverseTo;
     Creature.prototype.move = move;
@@ -185,7 +185,8 @@ var Creature = (function (_, parentClass) {
     Creature.prototype.paint = paint;
     Creature.prototype.changeState = changeState;
     Creature.prototype.stateHandler = stateHandler;
+    Mixin( Creature );
 
     //Возвращаем наш конструктор существа
     return Creature;
-})( _, GameObject ); //Выполняем наш модуль и передаем в него _ (конструктор lodash)
+})( _, EventMixin ); //Выполняем наш модуль и передаем в него _ (конструктор lodash)
